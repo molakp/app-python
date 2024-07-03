@@ -30,8 +30,9 @@ class AuthDAO:
     def register(self, email, plain_password, name):
         encrypted = bcrypt.hashpw(plain_password.encode("utf8"), bcrypt.gensalt()).decode('utf8')
 
+        # tag::create[]
         def create_user(tx, email, encrypted, name):
-            return tx.run(""" // (1)
+            return tx.run(""" // <1>
                 CREATE (u:User {
                     userId: randomUuid(),
                     email: $email,
@@ -40,13 +41,18 @@ class AuthDAO:
                 })
                 RETURN u
             """,
-            email=email, encrypted=encrypted, name=name # (2)
-            ).single() # (3)
+            email=email, encrypted=encrypted, name=name # <2>
+            ).single() # <3>
+        # end::create[]
 
+        # tag::catch[]
         try:
+            # tag::call_create[]
             with self.driver.session() as session:
                 result = session.execute_write(create_user, email, encrypted, name)
+                # end::call_create[]
 
+                # tag::extract[]
                 user = result['u']
 
                 payload = {
@@ -58,11 +64,13 @@ class AuthDAO:
                 payload["token"] = self._generate_token(payload)
 
                 return payload
+                # end::extract[]
         except ConstraintError as err:
             # Pass error details through to a ValidationException
             raise ValidationException(err.message, {
                 "email": err.message
             })
+        # end::catch[]
     # end::register[]
 
     """
