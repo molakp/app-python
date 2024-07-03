@@ -10,6 +10,7 @@ load_dotenv()
 # Aggiungi il percorso della directory principale del progetto al PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app-python')))
 
+# Importazioni dai moduli api
 from api.dao.auth import AuthDAO
 from api.neo4j import get_driver
 
