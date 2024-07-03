@@ -29,7 +29,7 @@ def test_register_user(app):
         dao = AuthDAO(driver, os.environ.get('JWT_SECRET'))
 
         user = dao.register(email, password, name)
-
+        
         assert user["userId"] is not None
         assert user["name"] == name
         assert "password" not in user
