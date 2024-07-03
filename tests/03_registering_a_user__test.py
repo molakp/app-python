@@ -1,7 +1,14 @@
 import os
+import sys
 from neo4j.exceptions import Neo4jError
-
 import pytest
+from dotenv import load_dotenv
+
+# Carica le variabili d'ambiente dal file .env
+load_dotenv()
+
+# Aggiungi il percorso della directory principale del progetto al PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app-python')))
 
 from api.dao.auth import AuthDAO
 from api.neo4j import get_driver
@@ -27,7 +34,8 @@ def test_register_user(app):
         driver = get_driver()
 
         dao = AuthDAO(driver, os.environ.get('JWT_SECRET'))
-
+        assert dao != ""
+        assert dao is not None
         user = dao.register(email, password, name)
         
         assert user["userId"] is not None
